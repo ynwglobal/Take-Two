@@ -6,7 +6,7 @@
   [![Made By](https://img.shields.io/badge/Made%20By-hbkvxncent-orange)](http://hbkvxncent.globalstats.xyz/)
   [![Join My Community](https://img.shields.io/badge/Join%20My-Community-7289DA)](https://discord.globalstats.xyz)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Last Commit](https://img.shields.io/badge/last%20commit-January%202025-blue)](#)
+  [![Last Commit](https://img.shields.io/badge/last%20commit-January%2010%2C%202026-blue)](#)
 </div>
 
 ## Overview
@@ -147,24 +147,42 @@ For firewall whitelisting or targeted scanning, here are the primary CIDR blocks
 
 ### Network Visualization
 
+> **Note:** GitHub's mobile app and some mobile browsers may not render Mermaid diagrams, displaying raw code instead. Please view this section on a desktop browser for the full visual experience.
+
 ```mermaid
-graph TD
-    subgraph AS11246 [Take-Two Interactive - AS11246]
-        A1[74.114.8.0/24]
-        A2[139.138.224.0/19]
-        A3[184.75.160.0/23]
-        A4[199.48.105.0/23]
-        A5[199.168.61.0/23]
-        A6[199.229.224.0/24]
-        A7[209.204.240.0/20]
+graph TB
+    %% Global Styles
+    classDef internet fill:#f8fafc,stroke:#64748b,stroke-width:4px,color:#0f172a,font-size:16px;
+    classDef t2 fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff,font-size:14px;
+    classDef rsg fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#ffffff,font-size:14px;
+
+    Internet((Internet / Public)):::internet
+
+    subgraph T2_ASN [AS11246 - Take-Two Interactive]
+        direction LR
+        A1[74.114.8.0/24]:::t2
+        A2[139.138.224.0/19]:::t2
+        A3[184.75.160.0/23]:::t2
+        A4[199.48.105.0/23]:::t2
+        A5[199.168.61.0/23]:::t2
+        A6[199.229.224.0/24]:::t2
+        A7[209.204.240.0/20]:::t2
     end
     
-    subgraph AS46555 [Rockstar Games - AS46555]
-        B1[104.255.104.0/22]
-        B2[164.153.136.0/22]
-        B3[192.81.240.0/21]
-        B4[198.133.210.0/24]
+    subgraph RSG_ASN [AS46555 - Rockstar Games]
+        direction LR
+        B1[104.255.104.0/22]:::rsg
+        B2[164.153.136.0/22]:::rsg
+        B3[192.81.240.0/21]:::rsg
+        B4[198.133.210.0/24]:::rsg
     end
+
+    Internet --> T2_ASN
+    Internet --> RSG_ASN
+
+    %% Styling Subgraphs
+    style T2_ASN fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+    style RSG_ASN fill:#fffbeb,stroke:#f59e0b,stroke-width:2px,color:#78350f
 ```
 
 ## Threat Intelligence & Monitoring
@@ -220,6 +238,8 @@ print(rockstar_ips[:5])
 * The presence of an IP in this list does not guarantee it is currently active or in use by Take-Two Interactive.
 
 ### Visual Infrastructure Map
+
+> **Note:** GitHub's mobile app and some mobile browsers may not render Mermaid diagrams, displaying raw code instead. Please view this section on a desktop browser for the full visual experience.
 
 ```mermaid
 graph TD
@@ -292,3 +312,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 > This repository and the data contained within are provided for **educational and research purposes only**. Network scanning, probing, or interacting with systems you do not own or have explicit permission to test may violate laws such as the **Computer Fraud and Abuse Act (CFAA)** in the United States or similar regulations in other jurisdictions.
 >
 > **Liability Waiver:** The author ([hbkvxncent](https://hbkvxncent.globalstats.xyz/)) is **in no way responsible** for any actions, damages, or legal consequences resulting from the use, misuse, or interpretation of the data provided in this repository. By accessing this data, you agree that you are solely responsible for your actions and compliance with all applicable laws and terms of service.
+
