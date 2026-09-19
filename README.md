@@ -1,142 +1,142 @@
 <div align="center">
   <img src="Take-Two-Interactive-logo.webp" width="150" alt="Take-Two Interactive Logo">
-  <h1>Take-Two Interactive Network Infrastructure Analysis</h1>
+  <h1>Take-Two Interactive Network Data</h1>
 
-  [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](http://hbkvxncent.globalstats.xyz/)
-  [![Made By](https://img.shields.io/badge/Made%20By-hbkvxncent-orange)](http://hbkvxncent.globalstats.xyz/)
-  [![Join My Community](https://img.shields.io/badge/Join%20My-Community-7289DA)](https://discord.globalstats.xyz)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  [![Last Commit](https://img.shields.io/badge/last%20commit-January%2010%2C%202026-blue)](#)
+  [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](REVIEW.md)
+  [![Last commit](https://img.shields.io/github/last-commit/ynwglobal/Take-Two?label=last%20commit)](https://github.com/ynwglobal/Take-Two/commits/main/)
+  [![Reviewed](https://img.shields.io/badge/reviewed-September%2019%2C%202026-2563eb.svg)](source_snapshot.json)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 </div>
 
 ## Overview
 
-This repository hosts a comprehensive dataset focused on the network infrastructure of **Take-Two Interactive Software, Inc.** and its subsidiaries (Rockstar Games, 2K, Private Division, etc.). The project aims to map public-facing assets, game servers, and corporate nodes for security research and network analysis purposes.
+This repository contains a research-oriented snapshot of publicly announced
+IPv4 network space associated with **Take-Two Interactive Software, Inc.** and
+several of its labels and subsidiaries, including Rockstar Games, 2K Games,
+and Zynga.
+
+The dataset is intended for defensive inventory, firewall review, SIEM
+enrichment, and validation of existing allowlists. A BGP announcement or
+registry attribution does **not** prove that an address is currently an active
+game server or that a particular service is operated from that address.
+
+> **Snapshot date:** September 19, 2026  
+> **Current commit badge:** The GitHub last-commit badge above updates
+> automatically after this README is committed to the upstream repository.
 
 ## Table of Contents
 
-- Overview
-- Dataset Contents
-- Data Quality and Cleaning
-- Identified Network Ranges
-- Recommended Tools
-- Usage
-- Known Limitations
-- Contributing
-- License
-- Disclaimer
+- [Dataset Snapshot](#dataset-snapshot)
+- [Files](#files)
+- [What Was Corrected](#what-was-corrected)
+- [Current ASN Coverage](#current-asn-coverage)
+- [Quick CIDR Reference](#quick-cidr-reference)
+- [Network Visualization](#network-visualization)
+- [Missing Ranges Added](#missing-ranges-added)
+- [Data Quality and Cleaning](#data-quality-and-cleaning)
+- [Usage](#usage)
+- [Defensive Monitoring](#defensive-monitoring)
+- [Known Limitations](#known-limitations)
+- [Methodology and Sources](#methodology-and-sources)
+- [Responsible Use](#responsible-use)
+- [Author](#author)
+- [Contributing](#contributing)
+- [License](#license)
+- [Disclaimer](#disclaimer)
 
-## Dataset Contents
+## Dataset Snapshot
 
-The files in this repository contain lists of IP addresses associated with Take-Two Interactive and its subsidiaries. The `take-two_ips.csv` file contains 15,772 unique IP addresses. The `Rockstar_ips.csv` file contains 6,382 individual IP addresses.
+| Dataset | Unique IPv4 addresses | Notes |
+| :--- | ---: | :--- |
+| `take-two_ips.csv` | **19,594** | Corrected, deduplicated master list |
+| `Rockstar_ips.csv` | **4,344** | Upstream Rockstar list after deduplication |
+| Added to master | **3,822** | Addresses from nine currently announced ranges |
 
-### Files
+The corrected master file contains one IPv4 address per line. Its first line
+is a summary and is not a CSV header:
 
-#### `take-two_ips.csv`
-
-**Type:** Master Dataset
-**Format:** Line-separated IPs
-**Rows:** 15,773
-**Columns:** N/A (Raw IPs)
-
-**Description:**
-This file represents the complete, unfiltered network footprint of Take-Two Interactive Software, Inc. It is generated through ASN enumeration and passive reconnaissance. It includes infrastructure for all subsidiary labels and studios. **Note:** This file is not a standard CSV. The first line is a summary (`Total unique IPs: 15772`) and is not a header.
-
-**Contents:**
-*   **Corporate:** Parent company infrastructure, internal tools, VPN gateways, and email servers.
-*   **Publishing Labels:** Infrastructure for 2K Games, Private Division, and Ghost Story Games.
-*   **Development Studios:** Nodes associated with Firaxis, Hangar 13, Visual Concepts, and Cat Daddy Games.
-*   **Cloud Infrastructure:** Assets hosted on AWS, Google Cloud, and Azure utilized by backend services.
-*   **Content Delivery:** Nodes associated with CDN endpoints for game patches and media distribution.
-
-**Technical Application:**
-*   **SIEM Integration:** Ingesting into Splunk, Elastic Stack, or other monitoring tools to tag traffic associated with Take-Two.
-*   **Firewall Rules:** Generating whitelist/blacklist objects for enterprise network policies.
-*   **Asset Discovery:** A baseline for security researchers performing reconnaissance on public-facing infrastructure.
-
-#### `Rockstar_ips.csv`
-
-<img src="rockstar.ico" width="48" height="48" alt="Rockstar Games Logo">
-
-**Type:** Targeted Subset
-**Format:** CSV
-**Columns:** `index`, `ip`
-
-**Description:**
-A curated subset of the master dataset, strictly filtering for assets allocated to **Rockstar Games** (AS46555). This list excludes general Take-Two infrastructure to focus on the specific needs of Rockstar titles. The file contains an extensive 39-line header with CIDR block information, followed by a numbered list of IP addresses. The data is formatted as `index,ip` but does not contain a formal CSV header row.
-
-**Contents:**
-*   **Game Servers:** Dedicated session hosts for *Grand Theft Auto V* (GTA Online) and *Red Dead Redemption 2* (Red Dead Online).
-*   **Authentication:** Social Club login servers, cloud save synchronization endpoints, and launcher update nodes.
-*   **Matchmaking:** Telemetry and matchmaking coordinators.
-*   **Analytics:** Endpoints used for collecting game performance data and crash reporting.
-
-**Technical Application:**
-*   **Network Optimization:** Prioritizing traffic (QoS) for Rockstar titles on gaming routers.
-*   **Latency Testing:** Pinging specific clusters to determine the nearest or most stable data center.
-*   **Troubleshooting:** Isolating connectivity issues by verifying reachability to specific game subnets.
-*   **Geofencing:** Identifying regional server clusters to optimize connection paths.
-
-## Data Quality and Cleaning
-
-The data files in this repository are generated from automated scripts and may include formatting quirks. Before integrating the IP lists into other tools, it is recommended to clean them.
-
-### `take-two_ips.csv`
-
-This file contains a summary line at the beginning and may have blank lines at the end. The following snippets will create a cleaned file named `take-two_ips_cleaned.txt`.
-
-<details>
-<summary><strong>PowerShell (Windows)</strong></summary>
-
-```powershell
-(Get-Content take-two_ips.csv | Select-Object -Skip 1 | Where-Object { $_ -match '^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$' }) | Set-Content take-two_ips_cleaned.txt
+```text
+Total unique IPs: 19594
 ```
-</details>
 
-<details>
-<summary><strong>Bash (Linux/macOS)</strong></summary>
+## Files
 
-```bash
-grep -E "^[0-9]{1,3}(\.[0-9]{1,3}){3}$" take-two_ips.csv > take-two_ips_cleaned.txt
-```
-</details>
+| File | Purpose |
+| :--- | :--- |
+| `take-two_ips.csv` | Corrected master IP list for direct use in place of the upstream file |
+| `Rockstar_ips.csv` | Rockstar-focused upstream list; raw rows contain duplicates from overlapping CIDRs |
+| `missing_cidrs.txt` | Compact list of the nine ranges added to the master list |
+| `current_routes_by_asn.txt` | Complete IPv4 route snapshot for the five reviewed ASNs, including more-specific announcements |
+| `source_snapshot.json` | Machine-readable copy of the route comparison |
+| `REVIEW.md` | Findings, counts, and correction notes |
+| `original/` | Original downloaded repository files retained for comparison |
 
-*Use `take-two_ips_cleaned.txt` in the integration snippets below.*
+## What Was Corrected
 
-### `Rockstar_ips.csv`
+The corrected files address the following issues in the original snapshot:
 
-This file includes a descriptive header and footer. While the Python script in the Usage Example section handles this programmatically, you can also clean it using command-line tools to generate a flat IP list.
+1. Added **3,822 unique IPv4 addresses** from nine currently announced
+   Take-Two-associated ranges.
+2. Added `139.138.242.0/24`, which was announced by AS394977 but absent from
+   the original master list.
+3. Added `198.133.210.0/24` to the master list. It was already present in the
+   original Rockstar file.
+4. Corrected the master count from **15,772** to **19,594** unique addresses.
+5. Corrected the Rockstar count: the original file has **6,429 physical rows**
+   but only **4,344 unique IPv4 addresses** because parent and child CIDR
+   sections overlap.
+6. Removed the unsupported attribution of several Take-Two ranges to AS11246.
+7. Replaced the broad `139.138.224.0/19` claim with the currently announced
+   AS394977 routes instead of filling unannounced gaps.
 
-<details>
-<summary><strong>Bash (Linux/macOS)</strong></summary>
+## Current ASN Coverage
 
-```bash
-# Extract only the IP column (field 2) from lines starting with a number
-grep -E "^[0-9]+," Rockstar_ips.csv | cut -d, -f2 > rockstar_ips_cleaned.txt
-```
-</details>
+The route comparison covers these five ASNs:
 
-### Identified Network Ranges
-
-Analysis of the scan data indicates the following subnets are actively utilized by Take-Two Interactive. An **ASN** column has been added to identify the responsible autonomous system.
-
-| Subnet Range | ASN | Description |
+| ASN | Organization / label | Current address scope |
 | :--- | :--- | :--- |
-| **74.114.8.0/24** | AS11246 | Corporate / Legacy Infrastructure |
-| **104.255.104.0 - 104.255.107.255** | AS46555 | Game Services |
-| **139.138.224.0 - 139.138.255.255** | AS11246 | Primary Datacenter Block |
-| **164.153.136.0 - 164.153.139.255** | AS46555 | Online Services |
-| **184.75.160.0 - 184.75.161.255** | AS11246 | Web & API Endpoints |
-| **192.81.240.0 - 192.81.247.255** | AS46555 | Cloud Infrastructure |
-| **198.133.210.0/24** | AS46555 | Rockstar Games Dedicated Services |
-| **199.48.105.0 - 199.48.106.255** | AS11246 | Legacy Game Servers |
-| **199.168.61.0 - 199.168.62.255** | AS11246 | Internal Services |
-| **199.229.224.0/24** | AS11246 | Network Operations |
-| **209.204.240.0 - 209.204.254.255** | AS11246 | Public Facing Assets |
+| `AS394977` | Take-Two corporate / T2EE-AS1 | Corporate, web, API, and public infrastructure |
+| `AS46555` | Take-Two / Rockstar online services | Rockstar service blocks |
+| `AS54107` | Take-Two / Zynga | Zynga and related Take-Two infrastructure |
+| `AS202021` | Take-Two Europe / RSOE-EU | European service block |
+| `AS395856` | 2K Games | 2K Games service block |
 
-### Quick CIDR Reference (Rockstar Games)
+The complete route list, including more-specific announcements, is in
+`current_routes_by_asn.txt`. The following entries summarize the primary
+service blocks:
 
-For firewall whitelisting or targeted scanning, here are the primary CIDR blocks extracted from `Rockstar_ips.csv`:
+```text
+AS394977  74.114.8.0/24
+AS394977  139.138.224.0/24 through 139.138.255.0/24 (selected announced /24s only)
+AS394977  184.75.160.0/23
+AS394977  199.48.105.0/23
+AS394977  199.168.61.0/23
+AS394977  199.229.224.0/24
+AS394977  209.204.240.0/24 through 209.204.254.0/24
+
+AS46555   104.255.104.0/22
+AS46555   164.153.136.0/22
+AS46555   192.81.240.0/21
+AS46555   198.133.210.0/24
+
+AS54107   74.114.10.0/24
+AS54107   74.114.12.0/24
+AS54107   74.114.15.0/24
+AS54107   199.48.104.0/24
+AS54107   199.48.107.0/24
+
+AS202021  185.56.64.0/22
+AS395856  199.119.88.0/22
+```
+
+The `139.138.224.0/19` line above is intentionally described as selected
+`/24`s. It is not a claim that every `/24` inside the `/19` is announced.
+
+## Quick CIDR Reference
+
+### Rockstar / Take-Two online services
+
+These are the primary aggregate blocks associated with AS46555:
 
 ```text
 104.255.104.0/22
@@ -145,171 +145,248 @@ For firewall whitelisting or targeted scanning, here are the primary CIDR blocks
 198.133.210.0/24
 ```
 
-### Network Visualization
+### Additional Take-Two and label ranges
 
-> **Note:** GitHub's mobile app and some mobile browsers may not render Mermaid diagrams, displaying raw code instead. Please view this section on a desktop browser for the full visual experience.
-
-```mermaid
-graph TB
-    %% Global Styles
-    classDef internet fill:#f8fafc,stroke:#64748b,stroke-width:4px,color:#0f172a,font-size:16px;
-    classDef t2 fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#ffffff,font-size:14px;
-    classDef rsg fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#ffffff,font-size:14px;
-
-    Internet((Internet / Public)):::internet
-
-    subgraph T2_ASN [AS11246 - Take-Two Interactive]
-        direction LR
-        A1[74.114.8.0/24]:::t2
-        A2[139.138.224.0/19]:::t2
-        A3[184.75.160.0/23]:::t2
-        A4[199.48.105.0/23]:::t2
-        A5[199.168.61.0/23]:::t2
-        A6[199.229.224.0/24]:::t2
-        A7[209.204.240.0/20]:::t2
-    end
-    
-    subgraph RSG_ASN [AS46555 - Rockstar Games]
-        direction LR
-        B1[104.255.104.0/22]:::rsg
-        B2[164.153.136.0/22]:::rsg
-        B3[192.81.240.0/21]:::rsg
-        B4[198.133.210.0/24]:::rsg
-    end
-
-    Internet --> T2_ASN
-    Internet --> RSG_ASN
-
-    %% Styling Subgraphs
-    style T2_ASN fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
-    style RSG_ASN fill:#fffbeb,stroke:#f59e0b,stroke-width:2px,color:#78350f
+```text
+74.114.8.0/24
+74.114.10.0/24
+74.114.12.0/24
+74.114.15.0/24
+185.56.64.0/22
+199.48.104.0/24
+199.48.105.0/23
+199.48.107.0/24
+199.119.88.0/22
 ```
 
-## Threat Intelligence & Monitoring
+The complete, non-abbreviated route snapshot is maintained in
+`current_routes_by_asn.txt`. Use that file when a workflow requires every
+more-specific announcement rather than an aggregate reference.
 
-To pivot from IP lists to active threat intelligence, consider using the following search queries on public scanning engines.
+## Network Visualization
 
-### Shodan Dorks
-*   **Organization:** `org:"Take-Two Interactive"`
-*   **ASN:** `asn:AS46555`
-*   **Hostname:** `hostname:rockstargames.com`
-*   **Specific Range:** `net:104.255.104.0/22`
+The diagram shows the reviewed ownership relationships without implying that
+every address is an active endpoint:
 
-### Censys Queries
-*   **ASN:** `autonomous_system.asn: 46555`
-*   **Certificate Subject:** `services.tls.certificates.leaf_data.subject.common_name: *.rockstargames.com`
+```mermaid
+flowchart TB
+    Internet((Public Internet)):::internet
 
-## Recommended Tools
+    subgraph T2["Take-Two Interactive Software"]
+        direction LR
+        Corp["AS394977<br/>Corporate / T2EE-AS1"]:::corporate
+        Zynga["AS54107<br/>Take-Two / Zynga"]:::label
+        Europe["AS202021<br/>Take-Two Europe"]:::label
+    end
 
-The following tools are recommended for utilizing this dataset effectively:
+    subgraph Labels["Take-Two labels"]
+        direction LR
+        Rockstar["AS46555<br/>Rockstar online services"]:::rockstar
+        Games2K["AS395856<br/>2K Games"]:::label
+    end
 
-*   **Nmap:** For active service discovery and version detection on the identified IPs.
-*   **Masscan:** For high-speed scanning of the large subnets to verify host liveness.
-*   **Wireshark:** For analyzing packet captures when troubleshooting connectivity to these IPs.
+    Internet --> T2
+    Internet --> Labels
 
-## Usage Example
+    Corp --> CorporateRanges["74.114.8.0/24<br/>139.138.x selected /24s<br/>184.75.160.0/23<br/>199.168.61.0/23"]:::range
+    Rockstar --> RockstarRanges["104.255.104.0/22<br/>164.153.136.0/22<br/>192.81.240.0/21<br/>198.133.210.0/24"]:::range
+    Zynga --> ZyngaRanges["74.114.10.0/24<br/>74.114.12.0/24<br/>74.114.15.0/24<br/>199.48.104.0/24<br/>199.48.107.0/24"]:::range
+    Europe --> EuropeRanges["185.56.64.0/22"]:::range
+    Games2K --> Games2KRanges["199.119.88.0/22"]:::range
 
-You can easily integrate this data into your analysis workflows. Here is a quick example using Python to load the Rockstar Games IP addresses:
+    classDef internet fill:#f8fafc,stroke:#64748b,stroke-width:3px,color:#0f172a;
+    classDef corporate fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a;
+    classDef rockstar fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
+    classDef label fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#4c1d95;
+    classDef range fill:#f1f5f9,stroke:#94a3b8,stroke-width:1px,color:#334155;
+```
+
+## Missing Ranges Added
+
+These ranges were absent from the upstream `take-two_ips.csv` and were added
+to the corrected master list:
+
+| CIDR | ASN | Attribution | Host addresses added |
+| :--- | :---: | :--- | ---: |
+| `74.114.10.0/24` | `AS54107` | Take-Two / Zynga | 254 |
+| `74.114.12.0/24` | `AS54107` | Take-Two / Zynga | 254 |
+| `74.114.15.0/24` | `AS54107` | Take-Two / Zynga | 254 |
+| `139.138.242.0/24` | `AS394977` | Take-Two corporate | 254 |
+| `185.56.64.0/22` | `AS202021` | Take-Two Europe | 1,022 |
+| `198.133.210.0/24` | `AS46555` | Rockstar / Take-Two | 254 |
+| `199.48.104.0/24` | `AS54107` | Take-Two / Zynga | 254 |
+| `199.48.107.0/24` | `AS54107` | Take-Two / Zynga | 254 |
+| `199.119.88.0/22` | `AS395856` | 2K Games | 1,022 |
+
+## Data Quality and Cleaning
+
+### `take-two_ips.csv`
+
+The first line is a summary, not a header. To create a clean IP-only file:
+
+<details>
+<summary><strong>Bash / Linux / macOS</strong></summary>
+
+```bash
+tail -n +2 take-two_ips.csv \
+  | awk '/^[0-9]{1,3}(\.[0-9]{1,3}){3}$/' \
+  | sort -V -u \
+  > take-two_ips_cleaned.txt
+```
+
+</details>
+
+<details>
+<summary><strong>PowerShell</strong></summary>
+
+```powershell
+(Get-Content take-two_ips.csv | Select-Object -Skip 1 |
+  Where-Object { $_ -match '^\d{1,3}(\.\d{1,3}){3}$' } |
+  Sort-Object -Unique) |
+  Set-Content take-two_ips_cleaned.txt
+```
+
+</details>
+
+### `Rockstar_ips.csv`
+
+The upstream Rockstar file includes explanatory sections, parent CIDRs, child
+CIDRs, and a numbered IP list. Parent and child sections overlap, so the raw
+row count must not be treated as a unique-IP count:
+
+```bash
+awk -F, '/^[0-9]+,([0-9]{1,3}\.){3}[0-9]{1,3}$/ { print $2 }' \
+  Rockstar_ips.csv \
+  | sort -V -u \
+  > rockstar_ips_cleaned.txt
+```
+
+The cleaned Rockstar list contains **4,344 unique IPv4 addresses**.
+
+## Usage
+
+### Firewall and SIEM enrichment
+
+Use `take-two_ips_cleaned.txt` or the canonical CIDR list as an input to
+systems you own or administer. Prefer the smallest required range instead of
+allowlisting an entire aggregate when the service does not need it.
+
+### Python
 
 ```python
-import pandas as pd
+from ipaddress import ip_address
 
-# Load the Rockstar Games dataset, skipping the header lines
-# The file has a non-standard 39-line header, so we skip it.
-# We also handle the footer by coercing the index to numeric and dropping invalid rows.
-df = pd.read_csv('Rockstar_ips.csv', skiprows=39, names=['index', 'ip'], on_bad_lines='skip')
+with open("take-two_ips.csv", encoding="utf-8") as source:
+    addresses = {
+        ip_address(line.strip())
+        for line in source
+        if line.strip() and line.strip()[0].isdigit()
+    }
 
-# Filter out any footer lines or malformed data
-df = df[pd.to_numeric(df['index'], errors='coerce').notnull()]
-
-# The 'ip' column contains the IP addresses.
-print(f"Loaded {len(df)} IPs from Rockstar_ips.csv")
-print(df.head())
-
-# Example: Get the list of IPs
-rockstar_ips = df['ip'].tolist()
-print("\nFirst 5 IPs:")
-print(rockstar_ips[:5])
+print(f"Loaded {len(addresses):,} unique IPv4 addresses")
 ```
+
+### Route inventory
+
+For CIDR-based workflows, use `missing_cidrs.txt` for the corrected additions
+and `current_routes_by_asn.txt` for the complete route snapshot. Routing data
+can change, so refresh the sources before deploying a production firewall or
+allowlist change.
+
+## Defensive Monitoring
+
+For authorized defensive workflows, these public-data queries can help
+validate attribution without treating search results as proof of ownership:
+
+| Source | Query |
+| :--- | :--- |
+| Shodan | `org:"Take-Two Interactive"` |
+| Shodan | `asn:AS46555` |
+| Shodan | `hostname:rockstargames.com` |
+| Censys | `autonomous_system.asn: 46555` |
+
+Use passive sources, rate limits, and explicit authorization for any
+validation activity. Do not perform broad scans against live game services or
+third-party infrastructure.
 
 ## Known Limitations
-* The datasets are based on publicly available information and may not be fully comprehensive.
-* IP ranges can change over time. This data represents a snapshot and may become outdated.
-* The presence of an IP in this list does not guarantee it is currently active or in use by Take-Two Interactive.
 
-### Visual Infrastructure Map
+- This is a dated routing snapshot, not a continuously synchronized inventory.
+- BGP ownership and ASN attribution do not identify the service running on an IP.
+- Cloud, CDN, anti-DDoS, and shared-hosting addresses may serve more than one
+  organization or product.
+- The master file is IPv4-only; it does not represent Take-Two IPv6 space.
+- The presence of an address in this dataset does not establish that it is
+  reachable, active, or approved for interaction.
 
-> **Note:** GitHub's mobile app and some mobile browsers may not render Mermaid diagrams, displaying raw code instead. Please view this section on a desktop browser for the full visual experience.
+## Methodology and Sources
 
-```mermaid
-graph TD
-    T2("Take-Two Interactive Software") --> RSG("Rockstar Games")
-    T2 --> T2K("2K Games")
-    T2 --> PRV("Private Division")
-    
-    RSG --> RSG_DC("Social Club & Auth Nodes")
-    RSG --> RSG_GS("GTA/RDR Game Servers")
-    
-    T2K --> T2K_GS("NBA 2K / Borderlands Servers")
-    
-    subgraph "Infrastructure Types"
-        RSG_DC --- B1("Anycast CDN")
-        RSG_GS --- B2("Cloud Edge")
-    end
-```
-### Methodology
-This dataset was compiled using a multi-stage reconnaissance approach:
+This snapshot was checked on **September 19, 2026** using:
 
-- ASN Enumeration: Identification of primary Autonomous System Numbers (e.g., AS11246) associated with Take-Two and subsidiaries.
+- ASN-level announced-prefix data from RIPEstat
+- BGP route and ASN data from BGP.tools and Hurricane Electric
+- Registry and organization attribution from public routing databases
+- Deduplication and CIDR comparison against the upstream CSV files
 
-- Reverse DNS (rDNS): Mass-scanning of identified ranges to verify hostname patterns (e.g., *.rockstargames.com).
+### Source links
 
-- TLS/SSL Inspection: Analysis of Certificate Transparency (CT) logs to identify infrastructure used for "Social Club" and "Authentication Services."
+- [RIPEstat AS394977 announced prefixes](https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS394977)
+- [RIPEstat AS46555 announced prefixes](https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS46555)
+- [RIPEstat AS54107 announced prefixes](https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS54107)
+- [RIPEstat AS202021 announced prefixes](https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS202021)
+- [RIPEstat AS395856 announced prefixes](https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS395856)
+- [AS394977 on BGP.tools](https://bgp.tools/as/394977)
+- [AS46555 on BGP.tools](https://bgp.tools/as/46555)
+- [AS54107 on BGP.tools](https://bgp.tools/as/54107)
+- [AS202021 on Hurricane Electric](https://bgp.he.net/AS202021)
+- [AS395856 on IPIP.NET](https://whois.ipip.net/AS395856)
 
-- Peering DB Analysis: Verifying physical datacenter locations and exchange point presence.
+## Responsible Use
 
-### Advanced Integration Snippets
-Help users bridge the gap between your CSV and their existing tools. See the **Data Quality and Cleaning** section first.
+Use this data only for systems and networks you own or are explicitly
+authorized to administer. Do not scan, probe, or interact with these addresses
+without permission. Follow applicable laws, provider terms, and responsible
+disclosure procedures.
 
-#### A. Nmap Integration
-To verify which services are currently active on these IPs (using a cleaned file):
-
-```bash
-# Scan for common game service ports (80, 443, 6672, 61455-61458)
-nmap -sV -Pn -p 80,443,6672,61455-61458 -iL take-two_ips_cleaned.txt -oG scan_results.gnmap
-```
-
-#### B. Masscan (For Speed)
-For high-speed discovery across the entire block (using a cleaned file):
-
-```bash
-masscan -p443 --rate 1000 -iL take-two_ips_cleaned.txt --exclude 255.255.255.255
-```
-### Responsible Disclosure
-If you use this data to identify vulnerabilities (such as open S3 buckets or exposed dev environments), please follow ethical guidelines:
-
-- **Rockstar Games Bug Bounty**: Rockstar Games, a subsidiary of Take-Two, operates an official bug bounty program. Please report vulnerabilities for in-scope assets via their [HackerOne page](https://hackerone.com/rockstargames).
-
-- **Rate Limiting**: Ensure your scanning tools do not impact the availability of live game services for players.
+If you identify a security issue in an in-scope Rockstar asset, use the
+[Rockstar Games HackerOne program](https://hackerone.com/rockstargames) and
+avoid actions that could affect live services or players.
 
 ## Author
 
-**Made by [hbkvxncent](https://hbkvxncent.globalstats.xyz/)**
+Maintained by [ynwglobal](https://github.com/ynwglobal) as a public network
+data reference.
 
 ## Contributing
 
-Contributions are welcome! If you have suggestions for improving the dataset, please open an issue or submit a pull request.
+Contributions are welcome. When proposing a new range, include:
+
+1. The CIDR and ASN.
+2. The source and the date it was observed.
+3. Whether the range is currently announced.
+4. A clear explanation of why it should be attributed to Take-Two or one of
+   its labels.
+
+Do not add unannounced holes inside a larger allocation without independent,
+current evidence.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for
+details.
+
+## Disclaimer
+
+This repository and its data are provided for educational, defensive, and
+research purposes. The presence of an IP address or CIDR does not guarantee
+current ownership, activity, service identity, or authorization to interact
+with the system.
+
+The maintainers are not responsible for actions taken with this information.
+Users are responsible for complying with applicable laws, contracts, provider
+terms, and authorization requirements.
 
 ---
 
-## Disclaimer & Legal Warning
-
-> [!WARNING]
-> This repository and the data contained within are provided for **educational and research purposes only**. Network scanning, probing, or interacting with systems you do not own or have explicit permission to test may violate laws such as the **Computer Fraud and Abuse Act (CFAA)** in the United States or similar regulations in other jurisdictions.
->
-> **Liability Waiver:** The author ([hbkvxncent](https://hbkvxncent.globalstats.xyz/)) is **in no way responsible** for any actions, damages, or legal consequences resulting from the use, misuse, or interpretation of the data provided in this repository. By accessing this data, you agree that you are solely responsible for your actions and compliance with all applicable laws and terms of service.
-
+**Maintained as a dated network-data snapshot.** Verify current routing and
+ownership before using this information in production.
